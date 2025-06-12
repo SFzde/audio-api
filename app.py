@@ -14,11 +14,13 @@ def ensure_cookies_file():
 
 @app.route('/get-audio-url')
 def get_audio_url():
-    ensure_cookies_file()  # <- asegúrate de que cookies.txt existe
+    ensure_cookies_file()
 
     video_url = request.args.get('q')
     if not video_url:
         return 'Falta el parámetro q', 400
+
+    proxy_url = os.getenv("YOUTUBE_PROXY")  # <-- lee el proxy desde variable de entorno
 
     ydl_opts = {
         'quiet': True,
@@ -26,6 +28,9 @@ def get_audio_url():
         'skip_download': True,
         'cookiefile': COOKIE_FILE
     }
+
+    if proxy_url:
+        ydl_opts['proxy'] = proxy_url
 
     try:
         with YoutubeDL(ydl_opts) as ydl:
