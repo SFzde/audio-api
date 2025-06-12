@@ -22,7 +22,7 @@ def get_audio_url():
             return jsonify({'audioUrl': audio_url})
     except Exception as e:
         print(f"Error: {e}")
-        return 'No se pudo obtener la URL de audio', 500
+        return 'No se pudo obtener la URL de audio {e}', 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)
