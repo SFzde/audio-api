@@ -4,16 +4,18 @@ import os
 
 app = Flask(__name__)
 
-@app.before_first_request
-def create_cookie_file():
-    # Solo crea cookies.txt si no existe y la variable está definida
+COOKIE_FILE = "cookies.txt"
+
+def ensure_cookies_file():
     cookie_data = os.getenv("YOUTUBE_COOKIES")
-    if cookie_data and not os.path.exists("cookies.txt"):
-        with open("cookies.txt", "w", encoding='utf-8') as f:
+    if cookie_data and not os.path.exists(COOKIE_FILE):
+        with open(COOKIE_FILE, "w", encoding="utf-8") as f:
             f.write(cookie_data)
 
 @app.route('/get-audio-url')
 def get_audio_url():
+    ensure_cookies_file()  # <- asegúrate de que cookies.txt existe
+
     video_url = request.args.get('q')
     if not video_url:
         return 'Falta el parámetro q', 400
@@ -22,7 +24,7 @@ def get_audio_url():
         'quiet': True,
         'format': 'bestaudio[ext=webm]/bestaudio',
         'skip_download': True,
-        'cookiefile': 'cookies.txt'
+        'cookiefile': COOKIE_FILE
     }
 
     try:
